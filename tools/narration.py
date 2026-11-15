@@ -3,6 +3,7 @@
 
   python3 tools/narration.py split    <run-folder>   script-final.md -> voiceover/chapters.json + chNN.txt
   python3 tools/narration.py tts      <run-folder> --provider elevenlabs|openrouter --voice <id> --model <id> [--format pcm]
+                                                     [--stability 0.3 --style 0.6 --speed 1.1]  (ElevenLabs delivery)
                                                      chNN.txt -> chNN.mp3 (+ chNN.alignment.json from ElevenLabs)
   python3 tools/narration.py timeline <run-folder>   voiceover/* -> timeline.json
   python3 tools/narration.py selftest
@@ -97,12 +98,13 @@ def pcm_to_mp3(pcm, rate, channels):
     return out.stdout
 
 
-def request(provider, key, voice, model, text, fmt='mp3'):
+def request(provider, key, voice, model, text, fmt='mp3', settings=None):
     """One chapter -> (mp3 bytes, alignment or None)."""
     if provider == 'elevenlabs':
         req = urllib.request.Request(
             f'https://api.elevenlabs.io/v1/text-to-speech/{voice}/with-timestamps?output_format=mp3_44100_128',
-            data=json.dumps({'text': text, 'model_id': model}).encode(),
+            data=json.dumps({'text': text, 'model_id': model,
+                             **({'voice_settings': settings} if settings else {})}).encode(),
             headers={'xi-api-key': key, 'Content-Type': 'application/json'})
         with urllib.request.urlopen(req, timeout=300) as r:
             data = json.load(r)
@@ -132,7 +134,17 @@ def env_key(name):
     return None
 
 
-def tts(run, provider, voice, model, fmt='mp3'):
+def stale(vo, stem, text):
+    """True if chNN.mp3 was made from other text than `text` (the narration was edited after the voiceover)."""
+    sent, align = vo / f'{stem}.sent.txt', vo / f'{stem}.alignment.json'
+    if sent.exists():
+        return sent.read_text(encoding='utf-8') != text
+    if align.exists():  # runs made before .sent.txt existed: ElevenLabs timings spell out the text sent
+        return ''.join(json.loads(align.read_text(encoding='utf-8'))['characters']) != text
+    return False  # shortcut: old OpenRouter audio has no record of its text; delete its mp3 after editing
+
+
+def tts(run, provider, voice, model, fmt='mp3', settings=None):
     key = env_key(PROVIDERS[provider])
     if not key:
         sys.exit(f'Put {PROVIDERS[provider]}=... in the project .env file (git-ignored) or your environment.')
@@ -142,10 +154,13 @@ def tts(run, provider, voice, model, fmt='mp3'):
         stem = f"ch{ch['n']:02d}"
         mp3, align = vo / f'{stem}.mp3', vo / f'{stem}.alignment.json'
         if mp3.exists():
+            if stale(vo, stem, ch['text']):
+                sys.exit(f'{stem}: the chapter text changed after {mp3.name} was made. '
+                         f'Delete {mp3.name} to record it again (costs credits).')
             print(f'{stem}: already done, skipped (delete {mp3.name} to redo; each call costs credits)')
             continue
         try:
-            audio, alignment = request(provider, key, voice, model, ch['text'], fmt)
+            audio, alignment = request(provider, key, voice, model, ch['text'], fmt, settings)
         except urllib.error.HTTPError as e:
             sys.exit(f"{stem}: {provider} error {e.code}: {e.read()[:500].decode(errors='replace')}")
         except (urllib.error.URLError, ValueError, KeyError) as e:
@@ -155,6 +170,7 @@ def tts(run, provider, voice, model, fmt='mp3'):
         elif align.exists():
             align.unlink()  # stale timings from another voice would give wrong scene times
         mp3.write_bytes(audio)
+        (vo / f'{stem}.sent.txt').write_text(ch['text'], encoding='utf-8')
         print(f'{stem}: {mp3.name} written' + ('' if alignment else ' (no word timings: scene times will be estimated)'))
 
 
@@ -213,6 +229,8 @@ def timeline(run):
         stem = f"ch{ch['n']:02d}"
         if not (vo / f'{stem}.mp3').exists():
             sys.exit(f'{vo / stem}.mp3 missing. Run the tts step first.')
+        if stale(vo, stem, ch['text']):
+            sys.exit(f'{stem}.mp3 was made from older text. Delete it and run the tts step again.')
         align_file = vo / f'{stem}.alignment.json'
         al = json.loads(align_file.read_text(encoding='utf-8')) if align_file.exists() else None
         if al is None:
@@ -276,6 +294,14 @@ Kuk Swamp. [F1]
     assert est[0]['start'] == 0
     assert abs(est[1]['start'] - durs[0] * chs[0]['markers'][1]['offset'] / len(chs[0]['text'])) < 1e-3, est
     assert est[1]['end'] == round(durs[0], 3) and est[2]['start'] == round(durs[0], 3)
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmp:
+        vo = Path(tmp)
+        assert not stale(vo, 'ch01', 'In 1928.')  # nothing recorded: cannot tell
+        (vo / 'ch01.alignment.json').write_text(json.dumps({'characters': list('In 1928.')}))
+        assert not stale(vo, 'ch01', 'In 1928.') and stale(vo, 'ch01', 'In 1929.')  # same length, other text
+        (vo / 'ch01.sent.txt').write_text('In 1929.')
+        assert not stale(vo, 'ch01', 'In 1929.') and stale(vo, 'ch01', 'In 1928.')  # .sent.txt wins
     assert pcm_params('audio/pcm;rate=44100;channels=1') == (44100, 1)
     assert pcm_params('audio/pcm; rate=24000') == (24000, 1)
     print('selftest passed')
@@ -288,6 +314,10 @@ def main():
     p.add_argument('--provider', choices=list(PROVIDERS))
     p.add_argument('--voice')
     p.add_argument('--model')
+    # ElevenLabs delivery: lower stability and higher style = livelier; speed 0.7-1.2
+    p.add_argument('--stability', type=float)
+    p.add_argument('--style', type=float)
+    p.add_argument('--speed', type=float)
     p.add_argument('--format', choices=['mp3', 'pcm'], default='mp3',
                    help='OpenRouter audio format; use pcm for models that only return pcm (e.g. HeyGen)')
     a = p.parse_args()
@@ -298,9 +328,13 @@ def main():
     if a.command == 'split':
         split(a.run)
     elif a.command == 'tts':
-        if not (a.provider and a.voice and a.model):
-            sys.exit('tts needs --provider, --voice and --model (from the Voice line in brief.md).')
-        tts(a.run, a.provider, a.voice, a.model, a.format)
+        voice = a.voice or (env_key('ELEVENLABS_VOICE_ID') if a.provider == 'elevenlabs' else None)
+        if not (a.provider and voice and a.model):
+            sys.exit('tts needs --provider, --voice (or ELEVENLABS_VOICE_ID in .env) and --model.')
+        settings = {k: v for k, v in (('stability', a.stability), ('style', a.style), ('speed', a.speed)) if v is not None}
+        if settings:
+            settings.update(similarity_boost=0.75, use_speaker_boost=True)
+        tts(a.run, a.provider, voice, a.model, a.format, settings or None)
     else:
         timeline(a.run)
 

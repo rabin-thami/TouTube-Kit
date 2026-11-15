@@ -9,11 +9,13 @@ narration or add facts.
 **Input:** `timeline.json`, `voiceover/`, `assets.md`, `assets/`,
 `facts.md`, `brief.md` in the run folder.
 **Output:** `video/` in the run folder: the HyperFrames project,
-`storyboard/` frames, and the final `video/<run-folder-name>.mp4`.
+`storyboard/` frames, `elements/` (the reviewed code-drawn objects), and the final `video/<run-folder-name>.mp4`.
 
-Read `pipeline/animation-style.md` in full before you design anything. It is
-the visual and motion guide. This file adds the pipeline rules and the
-technical setup.
+Read `pipeline/animation-style.md` and `pipeline/directing.md` in full
+before you design anything. The style guide sets the look and motion; the
+directing guide sets the benchmark, the peak and signature shot, sound,
+pacing, camera and the final checks. This file adds the pipeline rules and
+the technical setup.
 
 ## Tools
 
@@ -65,18 +67,50 @@ technical setup.
    it), following the style guide. Render them as still images into
    `video/storyboard/`. Write `video/storyboard.md`: a table with chapter,
    time, what the viewer learns, the visual, the motion beats, and which
-   asset files are used. Then **stop**. The main session shows the
+   asset files are used. Add the benchmark, the signature shot, the camera
+   move and its reason per scene, and the sound plan (`directing.md`
+   sections 1-5), and the comparison with the last video in the same style
+   (section 6). Then **stop**. The main session shows the
    storyboard to the user. Do not build the full video until the user
    approves it.
-2. **Build chapter by chapter.** One composition per chapter, timed by
+2. **Element review (after storyboard approval, before the build).** Every
+   object drawn with code (a banana, a ship, a plant, a map, an icon) is
+   built once as its own file, `video/elements/<name>.html`, with a
+   `data-element="<name>"` attribute and its entry and idle motion. Chapter
+   compositions mount these files; they never redraw an object, so what the
+   user approves is what the video shows.
+   - Build `video/elements/index.html`: a gallery composition with every
+     element on a grid, its name under it, its motion looping every 3 s,
+     and next to it the reference photo from `assets/` it was drawn from
+     (if there is one).
+   - Check each element yourself first against `animation-style.md`
+     ("Code-drawn objects") at full size and phone size:
+     `npx hyperframes snapshot video/elements --at 0.5,1.5,2.9` and
+     `npx hyperframes snapshot video/elements --zoom '[data-element="<name>"]'`.
+   - List every element in `video/elements/elements.md`: name, scenes that
+     use it, reference file, status (`draft` / `approved`), the user's notes.
+   - Then **stop**. The main session shows the gallery sheet and tells the
+     user to open the live gallery with
+     `npx hyperframes preview video/elements`.
+   - Review loop: the user clicks an element in the preview and writes a
+     note in the chat ("this one looks blocky, curve the tips"). Find which
+     element they mean with `npx hyperframes preview video/elements --selection --json`
+     (or by the name they give), edit only that file, re-snapshot it, and
+     add the note to `elements.md`. When the user is unsure, make two or
+     three versions and show them side by side with
+     `npx hyperframes compare <a.html> <b.html> --labels A,B --at 1.5`.
+     Undo a bad edit with `npx hyperframes history`.
+   - Mark an element `approved` only when the user says so. The build uses
+     approved elements only, and does not change them without a new review.
+3. **Build chapter by chapter.** One composition per chapter, timed by
    `timeline.json`. Render each chapter on its own and look at 3-4 frames
    from it before you go on. Use `-q draft` for these previews, or
    `--start`/`--end` to render only a few seconds.
-3. **Join.** Combine the chapters and the voiceover into one composition and
+4. **Join.** Combine the chapters and the voiceover into one composition and
    render the full MP4 at 1920x1080, 60 fps, with `-q delivery` (unless
    `brief.md` says otherwise). Draft quality is too compressed for the final
    video.
-4. **Check before you hand over:**
+5. **Check before you hand over:**
    - The MP4 plays, its length matches `total_seconds` within about a
      second, and the voice is audible from start to end.
    - Look at a frame near the start, middle, and end of every chapter: no
@@ -84,6 +118,9 @@ technical setup.
    - Every asset file used is cleared in `assets.md`, and every credit is in
      the `assets.md` credits list.
    - Every on-screen number and date matches the narration and `facts.md`.
+   - The `directing.md` checks pass: failure list (section 7), reading
+     times (section 4), loudness about -14 LUFS (section 8). Write
+     `video/poster.jpg`.
 
 ## Fix round (after the user's review)
 

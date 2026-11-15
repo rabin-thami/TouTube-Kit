@@ -124,6 +124,22 @@ Do not fill the screen with unrelated decorative elements.
 
 Each major object should either communicate information, establish the setting, or participate in the visual story.
 
+### Code-drawn objects
+
+Natural objects (fruit, plants, animals, people, ships, hands) are paper
+cut-outs, not pixel art or stacked boxes.
+
+- Draw their outlines as smooth curved paths (SVG cubic Beziers), traced
+  from the silhouette of a real reference photo, not from rectangles,
+  polygons or a grid of blocks.
+- Give them the details that make them recognizable: for a banana, the
+  curve, the ridges along its length, the dark stem and tip, colour shifts
+  from green to yellow, small brown marks.
+- Paper look comes from layers: 2-4 overlapping cut pieces with soft
+  shadows, slightly uneven edges, and the paper texture.
+- An object must read as itself at phone size and still look crafted at
+  3x zoom. If it looks like a blocky game sprite, redraw it.
+
 ### Editorial infographic elements
 
 Integrate paper-cut illustrations with sophisticated graphic elements, including:

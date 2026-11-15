@@ -37,7 +37,8 @@ The subagent files are thin wrappers. The real instructions are in
 ## What is where
 
 - `AGENTS.md`: the pipeline and the rules. This is the "orchestrator".
-- `pipeline/`: one instruction file per step, plus `story-craft.md`.
+- `pipeline/`: one instruction file per step, plus `story-craft.md` (writing),
+  `animation-style.md` (look) and `directing.md` (directing choices and checks).
 - `templates/`: the format of each handoff file.
 - `runs/`: one folder per video.
 

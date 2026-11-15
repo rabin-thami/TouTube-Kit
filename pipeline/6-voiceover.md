@@ -48,7 +48,9 @@ do not change the words.
    ```
 
    Chapters that already have an MP3 are skipped, so a failed run can be
-   restarted without paying twice. OpenRouter model IDs must be exact dated
+   restarted without paying twice. If a chapter's text changed after its MP3
+   was made (a fix round), `tts` and `timeline` stop and name the chapter:
+   delete that `chNN.mp3` and run `tts` again. OpenRouter model IDs must be exact dated
    IDs; list them with `GET https://openrouter.ai/api/v1/models?output_modalities=speech`
    and use a voice from the model's `supported_voices`.
 4. Listen check: confirm every `chNN.mp3` exists, is not empty, and its length

@@ -42,6 +42,38 @@ You (the main session) own `brief.md`. After each step finishes, update its
 after Step 3, `APPROVED` after Step 4, `RENDERED` after Step 8, `DONE` after
 Step 9.
 
+### Handing a step to OpenCode (from Claude Code)
+
+A cheaper model in OpenCode can run any subagent step while Claude Code
+waits. Waiting must cost no tokens. The same pattern works for every agent:
+
+| Agent | Message (after "Run folder: runs/<run-folder>.") | Output to read |
+|---|---|---|
+| `researcher` | `Mode: new run` or `Mode: update run` | `facts.md` |
+| `script-writer` | `Mode: new script` or `Mode: fix round with check.md` | `script.md` |
+| `fact-checker` | `Check script.md against facts.md only.` | `check.md` |
+| `asset-finder` | `Plan and find assets for the approved script.` | `assets.md` |
+| `animator` | `Mode: storyboard`, `elements`, `build` or `fix round` | `video/storyboard.md`, `video/elements/elements.md`, `video/fix-log.md` |
+
+Each `opencode run` without `--continue` is a fresh session, so the
+fact-checker stays independent (rule 5).
+
+1. Start it in the background with all output going to a log file, never
+   to the chat:
+
+   ```bash
+   opencode run --agent <agent> --model opencode-go/glm-5.3-flash --auto --archived \
+     "Run folder: runs/<run-folder>. <message from the table>" \
+     > runs/<run-folder>/opencode-<agent>.log 2>&1; echo "exit $?"
+   ```
+
+   In Claude Code, run this with the Bash tool's `run_in_background`. The
+   harness wakes the session when the command exits.
+2. Do not poll: no `sleep`, no reading the log, no checking the output file
+   while it runs. If the user asks, say it is still running.
+3. When it exits, read only `tail -20` of the log and the step's output
+   file from the table. Open more of the log only if the step failed.
+
 ## Step 0: Brief
 
 Copy `templates/brief.md` into the run folder and fill it from the request.
@@ -76,8 +108,10 @@ After `check.md` is written:
   Step 8 uses only flagged files marked yes.
 - **Step 6:** before the first paid voiceover call, tell the user how many
   chapters and characters will be sent, and wait for a yes.
-- **Step 8:** after the storyboard, stop and show it. Build the full video
-  only after the user approves it.
+- **Step 8:** after the storyboard, stop and show it. After its approval,
+  stop again at the element review (`8-animate.md`, Method 2): show the
+  element gallery, take the user's notes element by element, and build the
+  full video only when every element is approved.
 
 ## Step 9: Human review (do not skip)
 
