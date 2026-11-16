@@ -6,7 +6,10 @@ they work in any coding agent that can read and write files and search the
 web. Voiceover, timing, and animation also need Python 3, Node.js 22+
 (HyperFrames), FFmpeg, and an `OPENROUTER_API_KEY` (tests) or `ELEVENLABS_API_KEY` (finals). Copy `.env.example` to `.env` and fill in your keys; `.env` is git-ignored.
 `tools/narration.py` does the voiceover and timing work; run
-`python3 tools/narration.py selftest` to check it.
+`python3 tools/narration.py selftest` to check it. `tools/hookcheck.py` scores
+English hook options with the third-party `tools/yt-script/` scorer (MIT,
+see `tools/yt-script/UPSTREAM.md`) and the kit's Kallaway panel
+(`tools/kallaway_score.py`).
 
 ## Use it
 

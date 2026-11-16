@@ -49,6 +49,11 @@ Everything else is placed around it.
   it (L-cut).
 - Every row of the plan's sound list must be audible in the final mix.
 
+- **Triple alignment in the hook:** in the first seconds, the on-screen
+  text, the voice and the picture say the same thing. The hook must read
+  with the sound off and make sense with eyes closed. A mismatch makes
+  people scroll.
+
 ## 4. Rhythm and reading time
 
 - **Vary the pace:** alternate busy and calm scenes, include one clear
