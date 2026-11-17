@@ -11,8 +11,19 @@ narration or add facts.
 **Output:** `video/` in the run folder: the HyperFrames project,
 `storyboard/` frames, `elements/` (the reviewed code-drawn objects), and the final `video/<run-folder-name>.mp4`.
 
-Read `pipeline/animation-style.md` and `pipeline/directing.md` in full
-before you design anything. The style guide sets the look and motion; the
+Read three files in full before you design anything:
+
+1. `brand/STYLE.md`: the channel theme (colours, fonts, logo, light, grain).
+   It wins on colour and fonts. Copy its CSS tokens into the project and
+   set `--eo-topic` from the brief's `Topic accent`. If the brief has no
+   topic accent, pick one by the brand's rules and report it.
+2. The style file that `brief.md` names (`Style:` line, default
+   `paper-cutout`): `pipeline/styles/<style>.md`. Its "Brand mapping"
+   section says which brand token plays each role. If the named file does
+   not exist, stop and report it.
+3. `pipeline/directing.md`.
+
+The brand sets the theme, the style sets the look and motion, and the
 directing guide sets the benchmark, the peak and signature shot, sound,
 pacing, camera and the final checks. This file adds the pipeline rules and
 the technical setup.
@@ -83,7 +94,7 @@ the technical setup.
      element on a grid, its name under it, its motion looping every 3 s,
      and next to it the reference photo from `assets/` it was drawn from
      (if there is one).
-   - Check each element yourself first against `animation-style.md`
+   - Check each element yourself first against the style file's object rules
      ("Code-drawn objects") at full size and phone size:
      `npx hyperframes snapshot video/elements --at 0.5,1.5,2.9` and
      `npx hyperframes snapshot video/elements --zoom '[data-element="<name>"]'`.
@@ -118,6 +129,7 @@ the technical setup.
    - Every asset file used is cleared in `assets.md`, and every credit is in
      the `assets.md` credits list.
    - Every on-screen number and date matches the narration and `facts.md`.
+   - The `brand/STYLE.md` checklist (section 10) passes.
    - The `directing.md` checks pass: failure list (section 7), reading
      times (section 4), loudness about -14 LUFS (section 8). Write
      `video/poster.jpg`.

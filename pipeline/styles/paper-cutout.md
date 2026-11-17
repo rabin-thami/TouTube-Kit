@@ -1,65 +1,19 @@
-# Animation Style Guide: Editorial Paper Cut-Out
+# Style: Editorial Paper Cut-Out
 
-The visual and motion guide for Step 8. It comes from the user's paper
-cut-out explainer prompt (its creative-quality, visual, and motion sections).
-That prompt's technical, export, and "no Remotion/HyperFrames" sections are
-replaced by `pipeline/8-animate.md`, because this pipeline renders with
-HyperFrames in Claude Code. Where this guide and `8-animate.md` or
-`AGENTS.md` disagree, those files win. In particular: real cleared photos
+`Style: paper-cutout` in `brief.md` (the default). The look and motion guide
+for Step 8. It comes from the user's paper cut-out explainer prompt (its
+visual and motion sections); its quality standard and rendering principles,
+shared by every style, now live in `pipeline/directing.md`. That prompt's
+technical, export, and "no Remotion/HyperFrames" sections are replaced by
+`pipeline/8-animate.md`, because this pipeline renders with HyperFrames in
+Claude Code. Where this guide and `8-animate.md` or `AGENTS.md` disagree,
+those files win. In particular: real cleared photos
 from `assets/` are allowed and preferred, and no fact may appear on screen
 unless it is in `facts.md` and the narration.
 
 ---
 
-## 1. Creative quality standard
-
-The animation must succeed in three areas:
-
-**Visual design:** It should look professionally composed, distinctive, cohesive, and carefully art-directed.
-
-**Motion design:** It should contain continuous visual progression, expressive transitions, layered movement, and multiple meaningful animated elements.
-
-**Educational value:** It should communicate useful information through visual demonstrations, not simply display a sequence of generic statements.
-
-Do not prioritize one area so heavily that the others become weak.
-
-Avoid producing a collection of pretty graphics that fail to explain the topic.
-
-Equally, avoid presenting useful information in dull, static compositions.
-
-The goal is an explainer that teaches through animation itself.
-
-### Information density
-
-Develop a clear educational narrative that goes beyond a superficial introduction.
-
-Use a concrete scenario, mechanism, comparison, cause-and-effect relationship, or visual demonstration where it improves understanding.
-
-Prioritize specific information over generic labels.
-
-A graphic should ideally demonstrate what is happening, why it happens, or how one step affects another.
-
-Use animated charts, changing diagrams, connected objects, moving indicators, comparisons, highlighted relationships, branching paths, and evolving illustrations where they genuinely help explain the subject.
-
-Do not invent factual statistics or imply that fictional demonstration values are real-world measurements.
-
-### Information hierarchy
-
-Use three levels of communication where useful:
-
-1. A short headline identifying the current idea.
-2. A central animated visual showing what happens.
-3. Supporting labels, data, or annotations explaining important details.
-
-Do not force all three into every composition.
-
-Use graphics to carry much of the explanation so the animation remains understandable without narration.
-
-Avoid long paragraphs or excessive simultaneous text.
-
----
-
-## 2. Visual direction: editorial paper cut-out
+## 1. Visual direction: editorial paper cut-out
 
 Create a distinctive handcrafted visual language combining physical paper illustration with sophisticated editorial infographic design.
 
@@ -67,19 +21,24 @@ The animation should look like detailed construction-paper artwork brought to li
 
 It must be more sophisticated than generic flat vector graphics with a grain overlay.
 
-### Color and materials
+### Brand mapping
 
-Use a restrained palette built around:
+Colours, fonts, light, shadow and grain come from `brand/STYLE.md`. This is
+the channel's house style, so it uses the brand palette directly:
 
-- Warm cream: #F3EBDD
-- Charcoal: #243139
-- Terracotta: #C56B50
-- Mustard: #E8B65C
-- Sage green: #8A9B7C
-- Dusty blue: #7C9DA5
-- Pale cardstock: #FFF8EB
+| Role in this style | Brand token |
+|---|---|
+| Background paper, sheets | `paper` |
+| Text, outlines, shadows | `ink` |
+| Photo-print borders | `cardstock` |
+| Arrows, tape, route dots, marker circles | `brand` |
+| The one subject colour (pieces, highlights, the key value) | the brief's topic accent |
+| Other paper pieces | `paper` and `ink` with depth shades, plus the subject's own natural colours where it is drawn |
 
-Add darker or lighter variations as needed for depth, contrast, and hierarchy.
+Headlines in Archivo 900, labels in Archivo 800, one story line in Fraunces
+italic (brand, section 3). Darker or lighter shades only for paper depth.
+
+### Materials
 
 Use matte paper materials with carefully controlled texture.
 
@@ -164,7 +123,8 @@ Graphics should look integrated into the paper environment rather than pasted ov
 
 ### Typography
 
-Use confident, readable typography as an active part of the composition.
+Fonts and sizes are fixed by `brand/STYLE.md`, section 3. Use confident,
+readable typography as an active part of the composition.
 
 Combine short headlines, carefully positioned labels, and occasional numerical or data-driven elements.
 
@@ -178,7 +138,7 @@ Avoid tiny explanatory paragraphs and overly complicated text effects.
 
 ---
 
-## 3. Motion direction
+## 2. Motion direction
 
 This is a motion graphics production. Movement is central to the experience.
 
@@ -270,17 +230,3 @@ Possible movements include:
 Camera movement should direct attention and connect ideas.
 
 Do not continuously zoom or move the camera without a reason.
-
----
-
-## 4. Rendering principles
-
-- Every frame must be drawable from its time alone, without depending on the
-  previous frame. This is what lets HyperFrames render frame by frame.
-- Generate paper grain with a well-mixed deterministic random function and
-  stable seeds. Do not regenerate textures every frame; keep them stable as
-  objects move.
-- Keep shadows, layering, lighting, and clipping consistent across the
-  whole video.
-- Draw everything that belongs in the video (text, labels, subtitles when
-  burned in) into the rendered composition.

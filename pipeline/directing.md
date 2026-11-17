@@ -1,8 +1,8 @@
 # Directing Guide
 
-How to direct a video in Step 8, whatever its look. `animation-style.md`
-says what the video looks like; this file says how to make choices: what to
-aim for, where the peak is, how sound and pace carry the story, and what to
+How to direct a video in Step 8, whatever its look. The style file named
+in `brief.md` (`pipeline/styles/<style>.md`) says what the video looks
+like; this file says how to make choices: what to aim for, where the peak is, how sound and pace carry the story, and what to
 check. `8-animate.md` and `AGENTS.md` win where they disagree with this
 file. Adapted from a short-film directing method; its music-grid, character
 and map-policy parts are left out because here the voice sets the timing
@@ -10,6 +10,52 @@ and real photos carry the story.
 
 A video is judged in this order: **sound, rhythm, camera, staging**.
 Good-looking frames are only the start.
+
+## 0. Quality standard (every style)
+
+The animation must succeed in three areas:
+
+**Visual design:** It should look professionally composed, distinctive, cohesive, and carefully art-directed.
+
+**Motion design:** It should contain continuous visual progression, expressive transitions, layered movement, and multiple meaningful animated elements.
+
+**Educational value:** It should communicate useful information through visual demonstrations, not simply display a sequence of generic statements.
+
+Do not prioritize one area so heavily that the others become weak.
+
+Avoid producing a collection of pretty graphics that fail to explain the topic.
+
+Equally, avoid presenting useful information in dull, static compositions.
+
+The goal is an explainer that teaches through animation itself.
+
+### Information density
+
+Develop a clear educational narrative that goes beyond a superficial introduction.
+
+Use a concrete scenario, mechanism, comparison, cause-and-effect relationship, or visual demonstration where it improves understanding.
+
+Prioritize specific information over generic labels.
+
+A graphic should ideally demonstrate what is happening, why it happens, or how one step affects another.
+
+Use animated charts, changing diagrams, connected objects, moving indicators, comparisons, highlighted relationships, branching paths, and evolving illustrations where they genuinely help explain the subject.
+
+Do not invent factual statistics or imply that fictional demonstration values are real-world measurements.
+
+### Information hierarchy
+
+Use three levels of communication where useful:
+
+1. A short headline identifying the current idea.
+2. A central animated visual showing what happens.
+3. Supporting labels, data, or annotations explaining important details.
+
+Do not force all three into every composition.
+
+Use graphics to carry much of the explanation so the animation remains understandable without narration.
+
+Avoid long paragraphs or excessive simultaneous text.
 
 ## 1. Benchmark (before the storyboard)
 
@@ -116,4 +162,17 @@ Check every storyboard frame and the final contact frames for these:
   check once more. Anything bigger, tell the user in one line at delivery.
   The user's notes after delivery are new rounds: change only what they ask.
 - Export one strong frame as `video/poster.jpg` (thumbnail candidate): the
-  signature shot or the peak, subject large, no subtitle on it.
+  signature shot or the peak, subject large, no subtitle on it. The real
+  thumbnail follows `brand/STYLE.md`, section 6.
+
+## 9. Rendering principles (every style)
+
+- Every frame must be drawable from its time alone, without depending on the
+  previous frame. This is what lets HyperFrames render frame by frame.
+- Generate grain and textures with a well-mixed deterministic random function and
+  stable seeds. Do not regenerate textures every frame; keep them stable as
+  objects move.
+- Keep shadows, layering, lighting, and clipping consistent across the
+  whole video.
+- Draw everything that belongs in the video (text, labels, subtitles when
+  burned in) into the rendered composition.

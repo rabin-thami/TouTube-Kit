@@ -41,7 +41,10 @@ The subagent files are thin wrappers. The real instructions are in
 
 - `AGENTS.md`: the pipeline and the rules. This is the "orchestrator".
 - `pipeline/`: one instruction file per step, plus `story-craft.md` (writing),
-  `animation-style.md` (look) and `directing.md` (directing choices and checks).
+  `directing.md` (directing choices and checks), and `styles/` (one file per
+  video look: `paper-cutout.md`, `documentary-collage.md`; the brief picks one).
+- `brand/STYLE.md`: the channel's theme (colours, fonts, logo, thumbnails).
+  Every video style uses it; replace it with your own channel's brand.
 - `templates/`: the format of each handoff file.
 - `runs/`: one folder per video.
 
