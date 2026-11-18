@@ -1,0 +1,44 @@
+<!doctype html>
+<!-- HyperFrames port of the vox-editorial-style newspaper front page. Copy this folder, then run:
+     npx hyperframes check --json   and   npx hyperframes preview -->
+<html
+  data-composition-variables='[{"id":"headline1","type":"string","label":"Headline line 1","default":"CITY ADOPTS ITS FIRST"},{"id":"headline2","type":"string","label":"Brushed headline line","default":"OFFICIAL STREET MAP"}]'
+>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="6.25"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div
+        id="front"
+        data-composition-id="front"
+        data-composition-src="compositions/front.html"
+        data-start="0"
+        data-duration="6.25"
+        data-track-index="1"
+        data-track-kind="graphics"
+        data-width="1920"
+        data-height="1080"
+      ></div>
+
+      <!-- SFX cue sheet (seconds = frames @24 / 24); see references/SOUND_DESIGN.md -->
+      <audio id="sfx-rustle" class="clip" data-start="0" data-duration="0.7" data-volume="0.5" src="assets/sfx/paper-rustle.wav"></audio>
+      <audio id="sfx-stamp" class="clip" data-start="0.833" data-duration="0.3" data-volume="0.55" src="assets/sfx/stamp-thunk.wav"></audio>
+      <audio id="sfx-snap-in" class="clip" data-start="1.583" data-duration="0.25" data-volume="0.45" src="assets/sfx/whoosh-snap.wav"></audio>
+      <audio id="sfx-brush" class="clip" data-start="1.667" data-duration="0.48" data-volume="0.9" src="assets/sfx/brush-swish.wav"></audio>
+      <audio id="sfx-snap-out" class="clip" data-start="3.25" data-duration="0.25" data-volume="0.35" src="assets/sfx/whoosh-snap.wav"></audio>
+      <audio id="sfx-pan" class="clip" data-start="3.583" data-duration="0.5" data-volume="0.5" src="assets/sfx/whoosh-pan.wav"></audio>
+      <audio id="sfx-brush2" class="clip" data-start="4.667" data-duration="0.48" data-volume="0.5" src="assets/sfx/brush-swish.wav"></audio>
+    </div>
+    <script>
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,169 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #c4bdb2; }
+    #front-paper-tex, #front-vignette, #front-grain { position: absolute; inset: 0; pointer-events: none; }
+    #front-vignette {
+      mix-blend-mode: multiply;
+      background: radial-gradient(ellipse 75% 75% at 50% 45%, rgba(0,0,0,0) 40%, rgba(40,30,20,.21) 100%);
+    }
+    #front-grain { mix-blend-mode: overlay; opacity: 0.18; background-size: 512px 512px; }
+    #front-camera { position: absolute; inset: 0; transform-origin: 50% 40%; }
+    #front-clip-shadow { position: absolute; left: 270px; top: 70px; rotate: -1deg; filter: drop-shadow(6px 8px 14px rgba(0,0,0,.4)); }
+    #front-clip { position: relative; width: 1380px; height: 1330px; background: #e7e0cf; overflow: hidden; }
+    #front-clip-inner { position: relative; padding: 48px 70px; color: #3a3835; }
+    #front-tag {
+      display: inline-block; background: #7d3130; color: #f4efe6; opacity: .92;
+      font: 400 28px "EB Garamond", serif; padding: 8px 18px;
+    }
+    /* Bundled stand-ins: Playfair Display (masthead/headline), EB Garamond (body).
+       For the measured look, ship UnifrakturMaguntia + Source Serif 4 woff2 in assets/fonts and add @font-face. */
+    #front-masthead { text-align: center; margin-top: -6px; font: italic 900 72px "Playfair Display", serif; }
+    .front-rule { height: 4px; background: #3a3835; margin-top: 8px; transform-origin: 50% 50%; }
+    .front-rule.thin { height: 1px; margin-top: 4px; }
+    #front-headline {
+      margin-top: 34px; text-align: center; font: 900 88px/1.02 "Playfair Display", serif;
+      letter-spacing: -0.01em; filter: url(#front-ink);
+    }
+    .front-brush-wrap { position: relative; display: inline-block; }
+    .front-brush-wrap svg { position: absolute; left: -0.18em; top: 0.02em; width: calc(100% + 0.4em); height: calc(100% + 0.04em); overflow: visible; mix-blend-mode: multiply; }
+    .front-brush-wrap span { position: relative; }
+    #front-byline { text-align: center; margin-top: 18px; font: italic 26px "EB Garamond", serif; }
+    #front-body {
+      display: grid; grid-template-columns: 1fr 1fr 1.15fr; gap: 34px; margin-top: 26px;
+      font: 22px/1.38 "EB Garamond", serif; text-align: justify; filter: url(#front-ink);
+    }
+  </style>
+
+  <!-- the clipping is taller than the frame on purpose: the camera pans up to reveal it -->
+  <div id="root" data-composition-id="front" data-width="1920" data-height="1080" data-layout-allow-overflow>
+    <svg width="0" height="0" style="position:absolute">
+      <defs>
+        <!-- letterpress ink: rough edges + speckle holes (editorial-core letterpressFilter) -->
+        <filter id="front-ink">
+          <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="1" seed="5" result="n" />
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="2.4" xChannelSelector="R" yChannelSelector="G" result="rough" />
+          <feTurbulence type="fractalNoise" baseFrequency="0.22" numOctaves="2" seed="10" result="speck" />
+          <feColorMatrix id="front-ink-holes" in="speck" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -5 0.2" result="holes" />
+          <feComposite in="rough" in2="holes" operator="in" />
+        </filter>
+        <!-- dry brush (editorial-core brushFilter) -->
+        <filter id="front-brush" x="-5%" y="-40%" width="110%" height="180%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.0025 0.16" numOctaves="2" seed="7" result="streaks" />
+          <feColorMatrix in="streaks" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  6 0 0 0 -1.75" result="bristles" />
+          <feComposite in="SourceGraphic" in2="bristles" operator="in" result="dry" />
+          <feTurbulence type="fractalNoise" baseFrequency="0.03 0.12" numOctaves="3" seed="17" result="wobble" />
+          <feDisplacementMap in="dry" in2="wobble" scale="30" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+        <clipPath id="front-brush-clip"><rect id="front-brush-rect" x="-60" y="-100" width="0" height="300" /></clipPath>
+        <clipPath id="front-brush2-clip"><rect id="front-brush2-rect" x="-60" y="-100" width="0" height="300" /></clipPath>
+      </defs>
+    </svg>
+
+    <svg id="front-paper-tex" width="1920" height="1080" style="mix-blend-mode:multiply;opacity:.3">
+      <filter id="front-mottle"><feTurbulence type="fractalNoise" baseFrequency="0.012 0.02" numOctaves="4" seed="7" /><feColorMatrix type="matrix" values="0 0 0 0 0.55  0 0 0 0 0.5  0 0 0 0 0.45  0 0 0 -1.4 1.1" /></filter>
+      <rect width="100%" height="100%" filter="url(#front-mottle)" />
+    </svg>
+
+    <div id="front-camera">
+      <div id="front-clip-shadow">
+        <div id="front-clip">
+          <div id="front-clip-inner">
+            <div id="front-tag">MARCH 3, 19XX</div>
+            <div id="front-masthead">The Daily Placeholder</div>
+            <div id="front-rule1" class="front-rule"></div>
+            <div id="front-rule2" class="front-rule thin"></div>
+            <div id="front-headline">
+              <span data-var-text="headline1">CITY ADOPTS ITS FIRST</span><br />
+              <span class="front-brush-wrap">
+                <svg viewBox="0 0 1000 100" preserveAspectRatio="none">
+                  <g filter="url(#front-brush)"><g clip-path="url(#front-brush-clip)">
+                    <path fill="#F8E10F" d="M 8 26 C 300 12, 700 6, 992 2 C 1000 30, 1000 60, 994 80 C 700 86, 300 92, 4 98 C -2 74, -2 48, 8 26 Z" />
+                  </g></g>
+                </svg>
+                <span data-var-text="headline2">OFFICIAL STREET MAP</span>
+              </span>
+            </div>
+            <div id="front-byline">By a staff correspondent</div>
+            <div class="front-rule thin" style="margin:22px 0 0"></div>
+            <div id="front-body">
+              <div>Officials said the survey would take several seasons to complete. Residents gathered at the hall to compare the new sheets with the old. Several streets appear under two different names on earlier editions. The committee declined to comment on the proposed boundary changes.</div>
+              <div>Printers worked through the night to prepare the first run of copies.
+                <span class="front-brush-wrap">
+                  <svg viewBox="0 0 1000 100" preserveAspectRatio="none">
+                    <g filter="url(#front-brush)"><g clip-path="url(#front-brush2-clip)">
+                      <path fill="#F8E10F" d="M 8 26 C 300 12, 700 6, 992 2 C 1000 30, 1000 60, 994 80 C 700 86, 300 92, 4 98 C -2 74, -2 48, 8 26 Z" />
+                    </g></g>
+                  </svg>
+                  <span>The river had moved.</span>
+                </span>
+                Surveyors noted the change since the last measurement.</div>
+              <div style="font-style:italic;font-size:18px">Placeholder column: drop a halftone photo here (see references/NEWSPAPER_AND_BRUSH.md §4).</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="front-vignette"></div>
+    <div id="front-grain"></div>
+  </div>
+
+  <script>
+    // --- editorial-core subset (assets/core/editorial-core.js), inlined: scene scripts are self-contained ---
+    function cubicBezier(x1, y1, x2, y2) {
+      const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx;
+      const cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+      const sx = (t) => ((ax * t + bx) * t + cx) * t, sy = (t) => ((ay * t + by) * t + cy) * t;
+      const dx = (t) => (3 * ax * t + 2 * bx) * t + cx;
+      return (p) => {
+        if (p <= 0) return 0; if (p >= 1) return 1;
+        let t = p;
+        for (let i = 0; i < 8; i++) { const e = sx(t) - p, d = dx(t); if (Math.abs(e) < 1e-6 || Math.abs(d) < 1e-6) break; t -= e / d; }
+        return sy(t);
+      };
+    }
+    // only change 12 times a second (on twos)
+    const onTwos = (ease, dur) => { const n = Math.max(1, Math.round(dur * 12)); return (p) => ease(Math.min(1, Math.floor(p * n + 1e-9) / n)); };
+    const accel = cubicBezier(0.55, 0, 1, 0.45);
+    const lin = (p) => p;
+    function seeded(key) { let h = 2166136261; for (const c of String(key)) h = Math.imul(h ^ c.charCodeAt(0), 16777619); h += 0x6d2b79f5; let t = h; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
+    function tornClipPath(w, h, seed, step = 16, amp = 7) {
+      const pts = []; let i = 0; const j = () => seeded(seed + "-" + i++) * amp;
+      for (let x = 0; x <= w; x += step) pts.push(x + "px " + j() + "px");
+      for (let y = step; y <= h; y += step) pts.push(w - j() + "px " + y + "px");
+      for (let x = w - step; x >= 0; x -= step) pts.push(x + "px " + (h - j()) + "px");
+      for (let y = h - step; y > 0; y -= step) pts.push(j() + "px " + y + "px");
+      return "polygon(" + pts.join(",") + ")";
+    }
+
+    // static, deterministic setup
+    document.querySelector("#front-clip").style.clipPath = tornClipPath(1380, 1330, "front");
+    document.querySelector("#front-grain").style.backgroundImage =
+      "url(\"data:image/svg+xml;utf8," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='1' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(#n)'/></svg>") + "\")";
+
+    const tl = gsap.timeline({ paused: true });
+    const D = 6.25;
+    // headline letterpress ink-in: hole offset 0.2 → 4.4 over 0.33 s (4 drawings)
+    tl.fromTo("#front-ink-holes", { attr: { values: "0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -5 0.2" } },
+      { attr: { values: "0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -5 4.4" }, duration: 0.33, ease: onTwos(lin, 0.33) }, 0.08);
+    // date tag snaps up 28 px in 2 drawings
+    tl.fromTo("#front-tag", { opacity: 0, y: 28 }, { opacity: 0.92, y: 0, duration: 0.17, ease: onTwos(lin, 0.17) }, 0.67);
+    // double rule draws from the centre
+    tl.fromTo("#front-rule1", { scaleX: 0 }, { scaleX: 1, duration: 0.33, ease: onTwos(lin, 0.33) }, 0.92);
+    tl.fromTo("#front-rule2", { scaleX: 0 }, { scaleX: 1, duration: 0.33, ease: onTwos(lin, 0.33) }, 1.0);
+    tl.fromTo("#front-byline", { opacity: 0 }, { opacity: 1, duration: 0.01 }, 1.25);
+    // snap zoom ×1.22 in 4 f, brush swipe 10 f ease-in (V4), snap back, pan up 330 px ease-in hard stop
+    tl.fromTo("#front-camera", { scale: 1, y: 0 }, { scale: 1.22, duration: 0.17, ease: onTwos(accel, 0.17) }, 1.58);
+    tl.fromTo("#front-brush-rect", { attr: { width: 0 } }, { attr: { width: 1120 }, duration: 0.42, ease: onTwos(accel, 0.42) }, 1.67);
+    tl.to("#front-camera", { scale: 1, duration: 0.17, ease: onTwos(accel, 0.17) }, 3.25);
+    tl.to("#front-camera", { y: -330, duration: 0.33, ease: onTwos(accel, 0.33) }, 3.58);
+    // body inks in after the pan, then a short linear brush on one sentence
+    tl.fromTo("#front-body", { opacity: 0 }, { opacity: 1, duration: 0.33, ease: onTwos(lin, 0.33) }, 3.92);
+    tl.fromTo("#front-brush2-rect", { attr: { width: 0 } }, { attr: { width: 1120 }, duration: 0.33, ease: onTwos(lin, 0.33) }, 4.67);
+    // grain refresh 12/s: big stepped jumps of the noise tile (screen-locked layer)
+    tl.fromTo("#front-grain", { backgroundPosition: "0px 0px" },
+      { backgroundPosition: Math.round(D * 12 * 173) + "px " + Math.round(D * 12 * 97) + "px", duration: D, ease: "steps(" + Math.round(D * 12) + ")" }, 0);
+
+    window.__timelines["front"] = tl;
+  </script>
+</template>
